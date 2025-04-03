@@ -14,7 +14,7 @@ class HTMLNode:
     def props_to_html(self):
         return reduce(
             lambda x,
-            k: x + f"{k}=\"{self.props[k]}\" ",
+            k: x + f' {k}="{self.props[k]}"',
             self.props,
-            " "
+            ""
         )

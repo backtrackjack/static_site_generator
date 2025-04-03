@@ -10,5 +10,5 @@ class TestTextNode(unittest.TestCase):
         )
         self.assertEqual(
             node.props_to_html(),
-            ' class="text" id="1234" '
+            ' class="text" id="1234"'
         )
