@@ -21,26 +21,20 @@ def text_node_to_html_node(text_node):
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
-    for node in old_nodes:
-        if node.text_type != TextType.NORMAL:
-            new_nodes.append(node)
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.NORMAL:
+            new_nodes.append(old_node)
             continue
-
-        if not node.text:
-            continue
-
-        parts = [part for part in node.text.split(delimiter) if part]
-
-        if delimiter in ("**", "_", "`"):
-            if len(parts) % 2 != 0:
-                raise Exception(
-                    f"Closing delimiter {delimiter} not found for {node.text}"
-                )
-
-        for i in range(len(parts)):
+        split_nodes = []
+        sections = old_node.text.split(delimiter)
+        if len(sections) % 2 == 0:
+            raise ValueError("invalid markdown, formatted section not closed")
+        for i in range(len(sections)):
+            if sections[i] == "":
+                continue
             if i % 2 == 0:
-                new_nodes.append(TextNode(parts[i], TextType.NORMAL))
+                split_nodes.append(TextNode(sections[i], TextType.NORMAL))
             else:
-                new_nodes.append(TextNode(parts[i], text_type))
-
+                split_nodes.append(TextNode(sections[i], text_type))
+        new_nodes.extend(split_nodes)
     return new_nodes
