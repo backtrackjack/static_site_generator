@@ -48,8 +48,70 @@ def extract_markdown_images(text):
 def extract_markdown_links(text):
     return re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
 
-def split_nodes_images(old_nodes):
-    return
+def split_nodes_image(old_nodes):
+    splitted = []
+    for node in old_nodes:
+        if node.text_type != TextType.NORMAL:
+            splitted.append(node)
+            continue
+            
+        extracted = extract_markdown_images(node.text)
+        if not extracted:
+            splitted.append(node)
+            continue
+            
+        remaining_text = node.text
+        for alt_text, url in extracted:
+            image_markdown = f"![{alt_text}]({url})"
+            if image_markdown in remaining_text:
+                # Split at the first occurrence
+                parts = remaining_text.split(image_markdown, 1)
+                
+                # Add text before the image if not empty
+                if parts[0]:
+                    splitted.append(TextNode(parts[0], TextType.NORMAL))
+                
+                # Add the image node
+                splitted.append(TextNode(alt_text, TextType.IMAGE, url))
+                
+                # Update remaining text
+                remaining_text = parts[1] if len(parts) > 1 else ""
+        
+        # Add any remaining text after processing all images
+        if remaining_text:
+            splitted.append(TextNode(remaining_text, TextType.NORMAL))
+    return splitted
 
-def split_nodes_links(old_nodes):
-    return
+def split_nodes_link(old_nodes):
+    splitted = []
+    for node in old_nodes:
+        if node.text_type != TextType.NORMAL:
+            splitted.append(node)
+            continue
+            
+        extracted = extract_markdown_links(node.text)
+        if not extracted:
+            splitted.append(node)
+            continue
+            
+        remaining_text = node.text
+        for alt_text, url in extracted:
+            link_markdown = f"[{alt_text}]({url})"
+            if link_markdown in remaining_text:
+                # Split at the first occurrence
+                parts = remaining_text.split(link_markdown, 1)
+                
+                # Add text before the link if not empty
+                if parts[0]:
+                    splitted.append(TextNode(parts[0], TextType.NORMAL))
+                
+                # Add the link node
+                splitted.append(TextNode(alt_text, TextType.LINK, url))
+                
+                # Update remaining text
+                remaining_text = parts[1] if len(parts) > 1 else ""
+        
+        # Add any remaining text after processing all links
+        if remaining_text:
+            splitted.append(TextNode(remaining_text, TextType.NORMAL))
+    return splitted
