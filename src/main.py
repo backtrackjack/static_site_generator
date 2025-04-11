@@ -1,4 +1,4 @@
-from helpers import copy_to_directory, generate_page
+from helpers import copy_to_directory, generate_pages_recursive
 import shutil
 import os
 
@@ -10,7 +10,7 @@ def main():
 
     copy_to_directory("static", "public")
 
-    generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_recursive("content", "template.html", "public")
 
 
 main()
