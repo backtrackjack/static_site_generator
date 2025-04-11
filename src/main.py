@@ -1,9 +1,8 @@
-from textnode import TextNode, TextType
+from helpers import copy_to_directory
 
 
 def main():
-    node = TextNode("some text", TextType.NORMAL, "http://example.com")
-    print(node)
+    copy_to_directory("static", "public")
 
 
 main()
